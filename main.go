@@ -9,31 +9,29 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-var img *ebiten.Image
-
-func init() {
-	var err error
-	img, _, err = ebitenutil.NewImageFromFile("gopher.png")
-	if err != nil {
-		log.Fatal(err)
-	}
+func (g *Game) Update() error {
+	g.controls()
+	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	log.Println("Draw")
-	screen.Fill(color.RGBA{0xff, 0, 0, 0xff})
+	screen.Fill(color.RGBA{0xff, 123, 99, 0xff})
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(-5, 5)
-	op.GeoM.Scale(1.5, 3)
-	screen.DrawImage(img, op)
-	ebitenutil.DebugPrint(screen, "Hello, World jkljkjk!")
+	op.GeoM.Translate(g.floppy.xDelta, g.floppy.yDelta)
+	screen.DrawImage(gopher, op)
+	ebitenutil.DebugPrint(screen, "something work")
 }
-
 
 func main() {
 	ebiten.SetWindowSize(640, 888)
 	ebiten.SetWindowTitle("Hello, MIREC@@@@!")
-	if err := ebiten.RunGame(&Game{}); err != nil {
+	myGame := &Game{
+		floppy: Floppy{
+			yDelta: 0,
+			xDelta: 0,
+		},
+	}
+	if err := ebiten.RunGame(myGame); err != nil {
 		log.Fatal(err)
 	}
 }

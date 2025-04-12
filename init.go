@@ -1,11 +1,35 @@
 package main
 
-type Game struct{}
+import (
+	"log"
 
-func (g *Game) Update() error {
-	return nil
+	"github.com/hajimehoshi/ebiten/v2"
+
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+)
+
+type Game struct {
+	floppy     Floppy
+	background *ebiten.Image
+}
+
+type Floppy struct {
+	yDelta float64
+	xDelta float64
+}
+
+var (
+	gopher *ebiten.Image
+)
+
+func init() {
+	var err error
+	gopher, _, err = ebitenutil.NewImageFromFile("gopher.png")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 888
+	return 640, 888
 }
