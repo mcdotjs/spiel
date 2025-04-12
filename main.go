@@ -9,24 +9,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-type Game struct{}
-
-func (g *Game) Update() error {
-	log.Println("Update")
-	return nil
-}
-
-func (g *Game) Draw(screen *ebiten.Image) {
-	log.Println("Draw")
-	screen.Fill(color.RGBA{0xff, 0, 0, 0xff})
-	screen.DrawImage(img, nil)
-	ebitenutil.DebugPrint(screen, "Hello, World jkljkjk!")
-}
-
-func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 320, 888
-}
-
 var img *ebiten.Image
 
 func init() {
@@ -37,9 +19,18 @@ func init() {
 	}
 }
 
-func main() {
+func (g *Game) Draw(screen *ebiten.Image) {
+	log.Println("Draw")
+	screen.Fill(color.RGBA{0xff, 0, 0, 0xff})
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(-5, 5)
+	op.GeoM.Scale(1.5, 3)
+	screen.DrawImage(img, op)
+	ebitenutil.DebugPrint(screen, "Hello, World jkljkjk!")
+}
 
-	log.Println("main")
+
+func main() {
 	ebiten.SetWindowSize(640, 888)
 	ebiten.SetWindowTitle("Hello, MIREC@@@@!")
 	if err := ebiten.RunGame(&Game{}); err != nil {
