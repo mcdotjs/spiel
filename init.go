@@ -13,10 +13,6 @@ type Game struct {
 	background *ebiten.Image
 }
 
-type Floppy struct {
-	yDelta float64
-	xDelta float64
-}
 
 var (
 	gopher *ebiten.Image

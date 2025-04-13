@@ -10,14 +10,14 @@ import (
 )
 
 func (g *Game) Update() error {
-	g.controls()
+	g.floppy.useMoves()
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.RGBA{0xff, 123, 99, 0xff})
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(g.floppy.xDelta, g.floppy.yDelta)
+	op.GeoM.Translate(g.floppy.floppyPosition.xDelta, g.floppy.floppyPosition.yDelta)
 	screen.DrawImage(gopher, op)
 	ebitenutil.DebugPrint(screen, "something work")
 }
@@ -26,10 +26,7 @@ func main() {
 	ebiten.SetWindowSize(640, 888)
 	ebiten.SetWindowTitle("Hello, MIREC@@@@!")
 	myGame := &Game{
-		floppy: Floppy{
-			yDelta: 0,
-			xDelta: 0,
-		},
+		floppy: MyFloppy,
 	}
 	if err := ebiten.RunGame(myGame); err != nil {
 		log.Fatal(err)
