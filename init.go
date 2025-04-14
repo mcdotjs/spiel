@@ -9,9 +9,13 @@ import (
 )
 
 type Game struct {
-	floppy     Floppy
-	enemy      Enemy
+	Objects    []*GameObject
 	background *ebiten.Image
+}
+
+type GameObject struct {
+	Position Position
+	Mover    Mover
 }
 
 var (
