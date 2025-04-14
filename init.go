@@ -10,9 +10,9 @@ import (
 
 type Game struct {
 	floppy     Floppy
+	enemy      Enemy
 	background *ebiten.Image
 }
-
 
 var (
 	gopher *ebiten.Image

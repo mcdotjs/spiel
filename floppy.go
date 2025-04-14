@@ -4,7 +4,12 @@ import "github.com/hajimehoshi/ebiten/v2"
 
 type Floppy struct {
 	floppyPosition  Position
-	movementHandler AxisMovements
+	movementHandler Movement
+}
+
+type Enemy struct {
+	enemyPosition   Position
+	movementHandler Movement
 }
 
 type Movement struct {
@@ -16,9 +21,16 @@ type Position struct {
 	xDelta float64
 }
 
-type AxisMovements interface {
-	xAxis(*Floppy) error
-	yAxis(*Floppy) error
+type YMovementWithKeyPress interface {
+	yAxis(*Position) error
+}
+
+type XMovementWithKeyPress interface {
+	xAxis(*Position) error
+}
+
+type OnlyXMovement interface {
+	goToLeft(*Position) error
 }
 
 var MyFloppy = Floppy{
@@ -26,34 +38,55 @@ var MyFloppy = Floppy{
 		yDelta: 0,
 		xDelta: 0,
 	},
-	movementHandler: &Movement{
+	movementHandler: Movement{
 		speed: 9.0,
+		//keys!!!!
 	},
 }
 
-func (a *Movement) xAxis(f *Floppy) error {
+var MyEnemy = Enemy{
+	enemyPosition: Position{
+		yDelta: 100,
+		xDelta: 300,
+	},
+	movementHandler: Movement{
+		speed: 0.3,
+	},
+}
+
+func (a *Movement) goToLeft(f *Position) error {
+	f.xDelta -= a.speed
+	return nil
+}
+
+func (a *Movement) xAxis(f *Position) error {
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		f.floppyPosition.xDelta += a.speed
+		f.xDelta += a.speed
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		f.floppyPosition.xDelta -= a.speed
+		f.xDelta -= a.speed
 	}
 	return nil
 }
 
-func (a *Movement) yAxis(f *Floppy) error {
+func (a *Movement) yAxis(f *Position) error {
 	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-		f.floppyPosition.yDelta += a.speed
+		f.yDelta += a.speed
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-		f.floppyPosition.yDelta -= a.speed
+		f.yDelta -= a.speed
 	}
 	return nil
 }
 
-func (f *Floppy) useMoves() {
-	f.movementHandler.yAxis(f)
-	f.movementHandler.xAxis(f)
+func (f *Floppy) initMoves() {
+	f.movementHandler.yAxis(&f.floppyPosition)
+	f.movementHandler.xAxis(&f.floppyPosition)
 }
+
+func (e *Enemy) initEnemy() {
+	e.movementHandler.goToLeft(&e.enemyPosition)
+}
+
