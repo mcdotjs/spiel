@@ -9,39 +9,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+
 func (g *Game) Update() error {
 	g.UpdateObjectMovement()
 	return nil
-}
-
-var MyFloppy = GameObject{
-	Position: Position{
-		yDelta: 0,
-		xDelta: 0,
-	},
-	Mover: &KyeBoardMover{
-		Speed: 9.0,
-	},
-}
-
-var MyEnemy = GameObject{
-	Position: Position{
-		yDelta: 100,
-		xDelta: 300,
-	},
-	Mover: &JustHorizontalMover{
-		Speed: 0.3,
-	},
-}
-
-var Third = GameObject{
-	Position: Position{
-		yDelta: 600,
-		xDelta: 300,
-	},
-	Mover: &JustHorizontalMover{
-		Speed: 1,
-	},
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -49,20 +20,45 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, o := range g.Objects {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(o.Position.xDelta, o.Position.yDelta)
-		screen.DrawImage(gopher, op)
+		screen.DrawImage(o.Img, op)
 	}
 
 	ebitenutil.DebugPrint(screen, "something work")
 }
 
 func main() {
-	ebiten.SetWindowSize(640, 888)
+	MyFloppy := GameObject{
+		Position: Position{
+			yDelta: 0,
+			xDelta: 0,
+		},
+		Mover: &KyeBoardMover{
+			Speed: 9.0,
+		},
+		Img: gopher,
+	}
+
+	MyEnemy := GameObject{
+		Position: Position{
+			yDelta: 100,
+			xDelta: 300,
+		},
+		Mover: &JustHorizontalMover{
+			Speed: 0.3,
+		},
+		Img: pikachu,
+	}
+
+	MyGame := &Game{
+		Objects: []*GameObject{
+			&MyFloppy,
+			&MyEnemy,
+		},
+	}
+	ebiten.SetWindowSize(ScreenWidth, ScreenHeight)
 	ebiten.SetWindowTitle("Hello, MIREC@@@@!")
 
-	myGame := &Game{
-		Objects: []*GameObject{&MyFloppy, &MyEnemy, &Third},
-	}
-	if err := ebiten.RunGame(myGame); err != nil {
+	if err := ebiten.RunGame(MyGame); err != nil {
 		log.Fatal(err)
 	}
 }

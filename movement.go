@@ -10,6 +10,11 @@ type JustHorizontalMover struct {
 	Speed float64
 }
 
+type RandomMover struct {
+	Speed        float64
+	RandomFactor int
+}
+
 type Mover interface {
 	Move(*Position) error
 }
@@ -40,6 +45,11 @@ func (a *KyeBoardMover) Move(f *Position) error {
 	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
 		f.yDelta -= a.Speed
 	}
+	return nil
+}
+
+func (a *RandomMover) Move(f *Position) error {
+	f.yDelta -= a.Speed
 	return nil
 }
 
