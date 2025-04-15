@@ -7,8 +7,8 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
-
 
 func (g *Game) Update() error {
 	g.UpdateObjectMovement()
@@ -21,8 +21,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(o.Position.xDelta, o.Position.yDelta)
 		screen.DrawImage(o.Img, op)
-	}
 
+		if g.debug {
+			o.GetPoints()
+			o.DrawBorders()
+		}
+	}
+	vector.DrawFilledCircle(screen, 0, 0, 78, color.White, true)
 	ebitenutil.DebugPrint(screen, "something work")
 }
 
@@ -38,27 +43,29 @@ func main() {
 		Img: gopher,
 	}
 
-	MyEnemy := GameObject{
-		Position: Position{
-			yDelta: 100,
-			xDelta: 300,
-		},
-		Mover: &JustHorizontalMover{
-			Speed: 0.3,
-		},
-		Img: pikachu,
-	}
+	// MyEnemy := GameObject{
+	// 	Position: Position{
+	// 		yDelta: 2,
+	// 		xDelta: 3,
+	// 	},
+	// 	Mover: &JustHorizontalMover{
+	// 		Speed: 1.3,
+	// 	},
+	// 	Img: pikachu,
+	// }
 
 	MyGame := &Game{
 		Objects: []*GameObject{
 			&MyFloppy,
-			&MyEnemy,
 		},
+		debug: true,
 	}
+
 	ebiten.SetWindowSize(ScreenWidth, ScreenHeight)
 	ebiten.SetWindowTitle("Hello, MIREC@@@@!")
 
 	if err := ebiten.RunGame(MyGame); err != nil {
+
 		log.Fatal(err)
 	}
 }

@@ -11,19 +11,21 @@ import (
 var (
 	ScreenWidth  int
 	ScreenHeight int
-	gopher  *ebiten.Image
-	pikachu *ebiten.Image
+	gopher       *ebiten.Image
+	pikachu      *ebiten.Image
 )
 
 type Game struct {
 	Objects    []*GameObject
 	background *ebiten.Image
+	debug      bool
 }
 
 type GameObject struct {
 	Position Position
 	Mover    Mover
 	Img      *ebiten.Image
+	Points   []Point
 }
 
 func init() {
@@ -38,7 +40,6 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {

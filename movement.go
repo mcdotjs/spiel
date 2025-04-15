@@ -1,9 +1,18 @@
 package main
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"fmt"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type KyeBoardMover struct {
 	Speed float64
+}
+
+func (k *KyeBoardMover) drawWalls() error {
+
+	return nil
 }
 
 type JustHorizontalMover struct {
@@ -20,12 +29,19 @@ type Mover interface {
 }
 
 type Position struct {
-	yDelta float64
-	xDelta float64
+	yDelta    float64
+	xDelta    float64
+	direction bool
 }
 
 func (a *JustHorizontalMover) Move(f *Position) error {
-	f.xDelta -= a.Speed
+	if f.xDelta >= 0.0 && f.xDelta <= 300 {
+		f.xDelta += a.Speed
+	} else {
+
+		f.xDelta -= a.Speed
+	}
+	fmt.Println("delta XXX", f.xDelta)
 	return nil
 }
 
