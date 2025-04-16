@@ -164,7 +164,6 @@ func main() {
 		Obstacles: []*Obstacle{
 			&ObstacleParent, &ObstacleParent0,
 		},
-		background: Pika,
 		debug:      true,
 		layers:     gameLayer,
 	}
@@ -238,6 +237,16 @@ var gameLayer = [][]int{
 		25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
 	},
 }
+
+func generateSameLayer(num int) [][]int {
+	res := make([]int, num)
+	for i := 0; i < num; i++ {
+		fmt.Print(i)
+		res = append(res, 15)
+	}
+	return [][]int{res}
+}
+
 var obsLayears = [][]int{
 	{
 		22, 22,

@@ -9,16 +9,17 @@ import (
 )
 
 var (
-	ScreenWidth      int
-	ScreenHeight     int
-	gopher           *ebiten.Image
-	pikachu          *ebiten.Image
-	ObstacleImage    *ebiten.Image
-	ObstacleWidth    int
-	Pika             *ebiten.Image
-	TilesImage       *ebiten.Image
-	tilesSourceImage *ebiten.Image
-	tileSize         int = 32
+	ScreenWidth        int
+	ScreenHeight       int
+	gopher             *ebiten.Image
+	pikachu            *ebiten.Image
+	ObstacleImage      *ebiten.Image
+	ObstacleWidth      int
+	Pika               *ebiten.Image
+	TilesImage         *ebiten.Image
+	tilesSourceImage   *ebiten.Image
+	tileSize           int = 32
+	generatedGameLayer [][]int
 )
 
 type Game struct {
@@ -47,8 +48,9 @@ type GameObject struct {
 func init() {
 	ScreenHeight = 800
 	ScreenWidth = 1200
-	ObstacleWidth = 69
+	ObstacleWidth = 180
 	tileSize = 32
+	generatedGameLayer = generateSameLayer((ScreenWidth / tileSize) * (ScreenHeight / tileSize))
 	var err error
 	gopher, _, err = ebitenutil.NewImageFromFile("gopher.png")
 	if err != nil {
@@ -56,11 +58,6 @@ func init() {
 	}
 	// ObstacleImage = ebiten.NewImage(int(ObstacleWidth), ScreenHeight)
 	// ObstacleImage.Fill(color.White)
-
-	Pika, _, err = ebitenutil.NewImageFromFile("nature.png")
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	tilesSourceImage, _, err = ebitenutil.NewImageFromFile("dungeon.png")
 	if err != nil {
