@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
@@ -24,13 +26,14 @@ type Cell struct {
 	Lines []Line
 }
 
-func (o *GameObject) GetPoints() ([]Point, error) {
+func (o *GameObject) GetPoints(img *ebiten.Image) ([]Point, error) {
 	o.Points = make([]Point, 4)
-	w, h := o.Img.Bounds().Dx(), o.Img.Bounds().Dy()
+	w, h := img.Bounds().Dx(), img.Bounds().Dy()
 	o.Points[0] = Point{x: float64(0), y: float64(0)}
 	o.Points[1] = Point{x: float64(w), y: float64(0)}
 	o.Points[2] = Point{x: float64(w), y: float64(h)}
 	o.Points[3] = Point{x: float64(0), y: float64(h)}
+	fmt.Println("print points", o.Points)
 	return o.Points, nil
 }
 

@@ -33,8 +33,8 @@ func (a *JustHorizontalMover) Move(f *Position) error {
 	f.xDelta -= a.Speed
 	random := []int{-300, -350, -288, -188, -200, -250, -100, 0, 30, 50, 100}
 	r := rand.IntN(10)
-	if f.xDelta < -ObstacleWidth {
-		f.xDelta = ObstacleWidth + float64(ScreenWidth)
+	if f.xDelta < float64(-ObstacleWidth) {
+		f.xDelta = float64(ObstacleWidth) + float64(ScreenWidth)
 		fmt.Println("ran", r)
 		f.yDelta = float64(random[r])
 	}
