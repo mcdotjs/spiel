@@ -11,9 +11,17 @@ import (
 )
 
 func (g *Game) Update() error {
-	//g.Objects[0].Colliding(g.Objects[1])
-
 	g.UpdateObjectMovement()
+	for _, obs := range g.Obstacles {
+		for _, obsObj := range obs.Objects {
+			// Handle collision
+			fmt.Println("lllll", obsObj.GetPosition().xDelta)
+		}
+	}
+	for _, obsObj := range g.Objects {
+		// Handle collision
+		fmt.Println("lllllFLOPPPPPY", obsObj.GetPosition().xDelta)
+	}
 	return nil
 }
 
@@ -60,6 +68,8 @@ func (ob *Obstacle) drawObstacle(screen *ebiten.Image, object *GameObject) {
 			op.GeoM.Translate(float64((i%xCount)*tileSize), float64((i/xCount)*tileSize))
 
 			op.GeoM.Translate(ob.Position.xDelta, ob.Position.yDelta+object.Position.yDelta)
+			//fmt.Println(ob.Position.xDelta)
+			//TODO: here watching collisions
 			sx := (t % tileXCount) * tileSize
 			sy := (t / tileXCount) * tileSize
 			img := tilesSourceImage.SubImage(image.Rect(sx, sy, sx+tileSize, sy+tileSize)).(*ebiten.Image)
@@ -164,8 +174,8 @@ func main() {
 		Obstacles: []*Obstacle{
 			&ObstacleParent, &ObstacleParent0,
 		},
-		debug:      true,
-		layers:     gameLayer,
+		debug:  true,
+		layers: gameLayer,
 	}
 
 	ebiten.SetWindowSize(ScreenWidth, ScreenHeight)

@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/hajimehoshi/ebiten/v2"
 	"math/rand/v2"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type KyeBoardMover struct {
@@ -15,76 +16,90 @@ type JustHorizontalMover struct {
 	Index float64
 }
 
-type RandomMover struct {
-	Speed        float64
-	RandomFactor int
-}
-
 type Mover interface {
-	Move(*Position) error
+	Move(obj HasPosition) error
 }
 
 type Position struct {
 	yDelta float64
 	xDelta float64
 }
+type HasPosition interface {
+	GetPosition() *Position
+}
 
-func (a *JustHorizontalMover) Move(f *Position) error {
-	f.xDelta -= a.Speed
+func (g *GameObject) GetPosition() *Position {
+	return &g.Position
+}
+
+func (o *Obstacle) GetPosition() *Position {
+	return &o.Position
+}
+
+func (a *JustHorizontalMover) Move(obj HasPosition) error {
+
+	pos := obj.GetPosition()
+	pos.xDelta -= a.Speed
+	fmt.Println("Moving:", pos.xDelta)
+	if obstacle, ok := obj.(*Obstacle); ok {
+		for _, obObj := range obstacle.Objects {
+			obObj.Position.xDelta = pos.xDelta
+		}
+	}
 	random := []int{-300, -350, -288, -188, -200, -250, -100, 0, 30, 50, 100}
 	r := rand.IntN(10)
-	if f.xDelta < float64(-ObstacleWidth) {
-		f.xDelta = float64(ObstacleWidth) + float64(ScreenWidth)
+	if pos.xDelta < float64(-ObstacleWidth) {
+		pos.xDelta = float64(ObstacleWidth) + float64(ScreenWidth)
 		fmt.Println("ran", r)
-		f.yDelta = float64(random[r])
+		pos.yDelta = float64(random[r])
 	}
 	return nil
 }
-
-func (a *KyeBoardMover) Move(f *Position) error {
+func (a *KyeBoardMover) Move(ob HasPosition) error {
+	pos := ob.GetPosition()
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		f.xDelta += a.Speed
-		if f.xDelta > 699 {
-			f.xDelta = 699
+		pos.xDelta += a.Speed
+		if pos.xDelta > 699 {
+			pos.xDelta = 699
 		}
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		f.xDelta -= a.Speed
+		pos.xDelta -= a.Speed
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-		f.yDelta += a.Speed
+		pos.yDelta += a.Speed
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-		f.yDelta -= a.Speed
+		pos.yDelta -= a.Speed
 	}
-	return nil
-}
-
-func (a *RandomMover) Move(f *Position) error {
-	f.yDelta -= a.Speed
 	return nil
 }
 
 type Collision interface {
-	Colliding(*GameObject) error
+	Colliding(*Obstacle) error
 }
 
 func (o *GameObject) Colliding(other *Obstacle) error {
-	//fmt.Println("colllllllideing", o.Position.xDelta, other.Position.xDelta)
+	for _, obstacle := range other.Objects {
+		fmt.Println("colllllllideingXXXX", obstacle.Position.xDelta, o.Position.xDelta)
+	}
 	return nil
 }
 
 func (g *Game) UpdateObjectMovement() {
 	for _, o := range g.Objects {
-		o.Mover.Move(&o.Position)
+		o.Mover.Move(o)
 	}
 
 	for _, o := range g.Obstacles {
-		o.Mover.Move(&o.Position)
+		o.Mover.Move(o)
+		fmt.Println("ll", o.GetPosition().xDelta)
+		//g.Objects[0].Colliding(o)
 	}
+
 }
 
 func (g *Game) UpdateCollisions() {

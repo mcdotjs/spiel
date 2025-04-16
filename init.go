@@ -41,6 +41,7 @@ type Obstacle struct {
 type GameObject struct {
 	Position Position
 	Mover    Mover
+	Collision Collision
 	Img      *ebiten.Image
 	Points   []Point
 }
