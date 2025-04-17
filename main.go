@@ -12,11 +12,10 @@ import (
 
 func (g *Game) Update() error {
 	g.UpdateObjectMovement()
+	g.UpdateCollisions()
 	for _, obs := range g.Obstacles {
-		for _, obsObj := range obs.Objects {
-			// Handle collision
-			fmt.Println("lllll", obsObj.GetPosition().xDelta)
-		}
+		// Handle collision
+		fmt.Println("lllll", obs.GetPosition().xDelta)
 	}
 	for _, obsObj := range g.Objects {
 		// Handle collision
@@ -31,7 +30,6 @@ func (g *Game) drawBackground(screen *ebiten.Image, background *ebiten.Image) {
 	tileXCount := w / tileSize
 
 	var xCount = (ScreenWidth + 100) / tileSize
-	fmt.Println("xcount", xCount)
 	for _, l := range g.layers {
 		for i, t := range l {
 
@@ -55,7 +53,8 @@ func (g *Game) drawBackground(screen *ebiten.Image, background *ebiten.Image) {
 	// screen.DrawImage(background, op)
 }
 
-func (ob *Obstacle) drawObstacle(screen *ebiten.Image, object *GameObject) {
+// NOTE: this is more draw withi tiles
+func (ob *GameObject) drawObstacle(screen *ebiten.Image) {
 
 	w := tilesSourceImage.Bounds().Dx()
 	tileXCount := w / tileSize
@@ -67,9 +66,8 @@ func (ob *Obstacle) drawObstacle(screen *ebiten.Image, object *GameObject) {
 			op := &ebiten.DrawImageOptions{}
 			op.GeoM.Translate(float64((i%xCount)*tileSize), float64((i/xCount)*tileSize))
 
-			op.GeoM.Translate(ob.Position.xDelta, ob.Position.yDelta+object.Position.yDelta)
+			op.GeoM.Translate(ob.Position.xDelta, ob.Position.yDelta)
 			//fmt.Println(ob.Position.xDelta)
-			//TODO: here watching collisions
 			sx := (t % tileXCount) * tileSize
 			sy := (t / tileXCount) * tileSize
 			img := tilesSourceImage.SubImage(image.Rect(sx, sy, sx+tileSize, sy+tileSize)).(*ebiten.Image)
@@ -84,21 +82,23 @@ func (ob *Obstacle) drawObstacle(screen *ebiten.Image, object *GameObject) {
 func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.drawBackground(screen, tilesSourceImage)
+
+	//NOTE: zatial len gopher
 	for _, o := range g.Objects {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(o.Position.xDelta, o.Position.yDelta)
 		screen.DrawImage(o.Img, op)
-
 		if g.debug {
-			o.GetPoints(o.Img)
-			o.DrawBorders()
+			o.DrawDebug(screen)
 		}
 
 	}
-	for _, o := range g.Obstacles {
-		for _, obstacleObject := range o.Objects {
 
-			o.drawObstacle(screen, obstacleObject)
+	for _, o := range g.Obstacles {
+		o.drawObstacle(screen)
+
+		if g.debug {
+			o.DrawDebug(screen)
 		}
 	}
 
@@ -117,65 +117,49 @@ func main() {
 		Img: gopher,
 	}
 
-	ObstacleParent := Obstacle{
-		Position: Position{
-			yDelta: 0,
-			xDelta: 400,
-		},
-		Objects: []*GameObject{
-			{
-				Position: Position{
-					yDelta: -float64(ScreenHeight / 2),
-					xDelta: 400,
-				},
+	Obstacles := []*GameObject{
+		{
+			Position: Position{
+				yDelta: 0,
+				xDelta: 400,
 			},
-			{
-				Position: Position{
-					yDelta: float64(ScreenHeight/2) + 300,
-					xDelta: 400,
-				},
+			notImage: true,
+			layers:   obsLayears,
+			Mover: &JustHorizontalMover{
+				Speed: 3,
 			},
 		},
-		Mover: &JustHorizontalMover{
-			Speed: 3,
-		},
-		layers: obsLayears,
-	}
-
-	ObstacleParent0 := Obstacle{
-		Position: Position{
-			yDelta: 0,
-			xDelta: 800,
-		},
-		Objects: []*GameObject{
-			{
-				Position: Position{
-					yDelta: 0,
-					xDelta: 800,
-				},
+		{
+			Position: Position{
+				yDelta: 500,
+				xDelta: 400,
 			},
-			{
-				Position: Position{
-					yDelta: 800,
-					xDelta: 800,
-				},
+			notImage: true,
+			layers:   obsLayears,
+			Mover: &JustHorizontalMover{
+				Speed: 3,
 			},
 		},
-		Mover: &JustHorizontalMover{
-			Speed: 3,
+		{
+			Position: Position{
+				yDelta: 500,
+				xDelta: 900,
+			},
+			notImage: true,
+			layers:   obsLayears,
+			Mover: &JustHorizontalMover{
+				Speed: 3,
+			},
 		},
-		layers: obsLayears,
 	}
 
 	MyGame := &Game{
 		Objects: []*GameObject{
 			&MyFloppy,
 		},
-		Obstacles: []*Obstacle{
-			&ObstacleParent, &ObstacleParent0,
-		},
-		debug:  true,
-		layers: gameLayer,
+		Obstacles: Obstacles,
+		debug:     true,
+		layers:    gameLayer,
 	}
 
 	ebiten.SetWindowSize(ScreenWidth, ScreenHeight)
@@ -246,15 +230,6 @@ var gameLayer = [][]int{
 		25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
 		25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
 	},
-}
-
-func generateSameLayer(num int) [][]int {
-	res := make([]int, num)
-	for i := 0; i < num; i++ {
-		fmt.Print(i)
-		res = append(res, 15)
-	}
-	return [][]int{res}
 }
 
 var obsLayears = [][]int{
