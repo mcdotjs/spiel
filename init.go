@@ -1,26 +1,29 @@
 package main
 
 import (
-	"log"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"log"
 )
 
 var (
-	ScreenWidth        int
-	ScreenHeight       int
-	gopher             *ebiten.Image
-	pikachu            *ebiten.Image
-	ObstacleImage      *ebiten.Image
-	ObstacleWidth      int
-	TilesImage         *ebiten.Image
-	tilesSourceImage   *ebiten.Image
-	tileSize           int = 32
+	ScreenWidth      int
+	ScreenHeight     int
+	gopher           *ebiten.Image
+	pikachu          *ebiten.Image
+	ObstacleImage    *ebiten.Image
+	ObstacleWidth    int
+	TilesImage       *ebiten.Image
+	tilesSourceImage *ebiten.Image
+	tileSize         int = 32
 )
 
 type Game struct {
 	Objects    []*GameObject
 	Obstacles  []*GameObject
+	started    bool
+	ended      bool
+	hideGame   bool
 	background *ebiten.Image
 	debug      bool
 	layers     [][]int
@@ -37,8 +40,7 @@ type GameObject struct {
 func init() {
 	ScreenHeight = 800
 	ScreenWidth = 1200
-	ObstacleWidth = 96
-	tileSize = 32
+	ObstacleWidth = 128
 	var err error
 	gopher, _, err = ebitenutil.NewImageFromFile("gopher.png")
 	if err != nil {

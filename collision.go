@@ -14,20 +14,25 @@ var c int = 1
 func (g *Game) UpdateCollisions() {
 	playerObj := g.Objects[0] //floppy
 	playerBounds := playerObj.GetBounds()
-	
+
 	tilesPerRow := ObstacleWidth / tileSize
 	for _, obstacle := range g.Obstacles {
 		for _, layer := range obstacle.layers {
-			for tileIdx := range len(layer) {
-
+			for tileIdx, tileValue := range layer {
+				if tileValue == 0 {
+					continue
+				}
+				fmt.Println("tileIdx", tileIdx, tileValue)
 				tx = tileIdx % tilesPerRow
 				ty = tileIdx / tilesPerRow
 
 				tileBounds := getTileBounds(&obstacle.Position)
 
 				if playerBounds.Overlaps(tileBounds) {
+					g.ended = true
+					g.hideGame = true
 					handleCollision(playerObj, obstacle)
-					return 
+					return
 				}
 			}
 
@@ -35,12 +40,12 @@ func (g *Game) UpdateCollisions() {
 	}
 }
 
-
 func isCollidableTile(tileType int) bool {
 	//TODO: implement ... nice :)
 	// Define which tile types should cause collisions
 	// For example, if tile type 22 is a solid obstacle:
-	
+
+
 	return tileType == 22
 }
 
@@ -51,5 +56,3 @@ func handleCollision(player *GameObject, obstacle *GameObject) {
 	// Implement game over logic
 	// Or push the player back, reduce health, etc.
 }
-
-
