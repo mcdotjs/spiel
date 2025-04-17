@@ -3,17 +3,15 @@ package main
 import (
 	"fmt"
 	"image"
-	"image/color"
 	_ "image/png"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 func (g *Game) Update() error {
 	fmt.Println("program started")
-
+	g.count++
 	if g.started && g.hideGame == false {
 		g.UpdateObjectMovement()
 		g.UpdateCollisions()
@@ -78,7 +76,6 @@ func (ob *GameObject) drawObstacle(screen *ebiten.Image) {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-
 	g.drawBackground(screen, tilesSourceImage)
 	if g.started {
 		//NOTE: zatial len gopher
@@ -89,41 +86,23 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			if g.debug {
 				o.DrawDebug(screen)
 			}
-
 		}
-
 		for _, o := range g.Obstacles {
 			o.drawObstacle(screen)
-
 			if g.debug {
 				o.DrawDebug(screen)
 			}
 		}
 	}
+
 	if !g.started {
-
-		textLines := []struct {
-			Text  string
-			Color color.Color
-		}{
-			{"WELCOME!!!", color.RGBA{255, 255, 255, 255}},
-			{"Press ENTER to start game", color.RGBA{255, 255, 255, 255}},
-			{"Use ARROW KEYS to move", color.RGBA{200, 200, 100, 255}},
-			{"Avoid obstacles!", color.RGBA{255, 100, 100, 255}},
-		}
-		DrawMultiLineText(screen, textLines, 100, 60, 20.0, 30.0)
+		g.notStarted(screen)
 	}
+
 	if g.ended {
-		textLines := []struct {
-			Text  string
-			Color color.Color
-		}{
-			{"Foff Failure!!", color.RGBA{255, 255, 255, 255}},
-		}
-
-		DrawMultiLineText(screen, textLines, 100, 60, 20.0, 30.0)
+		g.gameEnded(screen)
 	}
-	ebitenutil.DebugPrint(screen, "something work")
+	g.DrawOwl(screen)
 }
 
 func main() {
@@ -179,7 +158,7 @@ func main() {
 			&MyFloppy,
 		},
 		Obstacles: Obstacles,
-		debug:     false,
+		debug:     true,
 		layers:    gameLayer,
 		started:   false,
 		ended:     false,
@@ -190,4 +169,5 @@ func main() {
 	if err := ebiten.RunGame(MyGame); err != nil {
 		log.Fatal(err)
 	}
+
 }

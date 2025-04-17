@@ -27,6 +27,7 @@ type Game struct {
 	background *ebiten.Image
 	debug      bool
 	layers     [][]int
+	count      int
 }
 
 type GameObject struct {
@@ -40,7 +41,7 @@ type GameObject struct {
 func init() {
 	ScreenHeight = 800
 	ScreenWidth = 1200
-	ObstacleWidth = 128
+	ObstacleWidth = 96
 	var err error
 	gopher, _, err = ebitenutil.NewImageFromFile("gopher.png")
 	if err != nil {
