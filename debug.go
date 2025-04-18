@@ -8,17 +8,21 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
+var (
+	playerXGrow int = 20
+	playerYGrow int = 20
+)
 
-func (o *GameObject) GetBounds() image.Rectangle {
+func (o *GameObject) GetBoundsOfPlayer() image.Rectangle {
+	pos := o.GetPosition()
 	if o.notImage == false {
-		width, height := o.Img.Bounds().Dx(), o.Img.Bounds().Dy()
+		//width, height := o.Img.Bounds().Dx(), o.Img.Bounds().Dy()
 		img := image.Rect(
-			int(o.Position.xDelta),
-			int(o.Position.yDelta),
-			int(o.Position.xDelta)+width,
-			int(o.Position.yDelta)+height,
+			int(pos.xDelta)-2*playerXGrow,
+			int(pos.yDelta)-3*playerYGrow,
+			int(pos.xDelta)+2*playerXGrow,
+			int(pos.yDelta),
 		)
-		//fmt.Println("IIIII", img)
 		return img
 	}
 
@@ -29,7 +33,6 @@ func (o *GameObject) GetBounds() image.Rectangle {
 		int(o.Position.xDelta)+width,
 		int(o.Position.yDelta)+height,
 	)
-	//fmt.Println("IIIII", img)
 	return img
 }
 
@@ -44,6 +47,6 @@ func getTileBounds(obstaclePos *Position) image.Rectangle {
 }
 
 func (o *GameObject) DrawDebug(screen *ebiten.Image) {
-	playerBounds := o.GetBounds()
+	playerBounds := o.GetBoundsOfPlayer()
 	vector.DrawFilledRect(screen, float32(playerBounds.Min.X), float32(playerBounds.Min.Y), float32(playerBounds.Dx()), float32(playerBounds.Dy()), color.RGBA{255, 0, 0, 28}, true)
 }

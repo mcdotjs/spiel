@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"image"
+	"image/color"
 	_ "image/png"
 	"log"
 
@@ -10,7 +10,6 @@ import (
 )
 
 func (g *Game) Update() error {
-	fmt.Println("program started")
 	g.count++
 	if g.started && g.hideGame == false {
 		g.UpdateObjectMovement()
@@ -18,6 +17,8 @@ func (g *Game) Update() error {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
+		g.ended = false
+		g.hideGame = false
 		g.started = true
 	}
 
@@ -45,6 +46,25 @@ func (g *Game) drawBackground(screen *ebiten.Image, background *ebiten.Image) {
 		}
 
 	}
+}
+
+func (g *Game) DrawDog(screen *ebiten.Image, playerObject *GameObject) {
+	tileSize := 64
+	frames := 5
+	animationSpeed := 5
+	sf := float64(2)
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate((-float64(tileSize) / 2), -float64(tileSize)/2)
+	op.GeoM.Translate(playerObject.Position.xDelta/sf, playerObject.Position.yDelta/sf)
+	op.GeoM.Scale(sf, sf)
+	i := (g.count / animationSpeed) % frames
+	sx, sy := i*int(tileSize), 0
+	//ebitenutil.DebugPrint(screen, fmt.Sprintf("X: ", playerObject.Position.xDelta, sx))
+	screen.DrawImage(dogImage.SubImage(image.Rect(sx, sy, sx+int(tileSize), sy+int(tileSize))).(*ebiten.Image), op)
+}
+
+func (g *Game) drawEndScreen(screen *ebiten.Image) {
+	screen.Fill(color.White)
 	// op := &ebiten.DrawImageOptions{}
 	// op.GeoM.Translate(0, 0)
 	// scaleX := float64(ScreenWidth) / float64(w)
@@ -76,13 +96,10 @@ func (ob *GameObject) drawObstacle(screen *ebiten.Image) {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.drawBackground(screen, tilesSourceImage)
 	if g.started {
-		//NOTE: zatial len gopher
+		g.drawBackground(screen, tilesSourceImage)
 		for _, o := range g.Objects {
-			op := &ebiten.DrawImageOptions{}
-			op.GeoM.Translate(o.Position.xDelta, o.Position.yDelta)
-			screen.DrawImage(o.Img, op)
+			g.DrawDog(screen, o)
 			if g.debug {
 				o.DrawDebug(screen)
 			}
@@ -96,74 +113,134 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	if !g.started {
+
 		g.notStarted(screen)
 	}
 
 	if g.ended {
+		//g.drawEndScreen(screen)
+		screen.Fill(color.Black)
 		g.gameEnded(screen)
+
+		g.DrawOwl(screen)
+
 	}
-	g.DrawOwl(screen)
+}
+
+func (g *Game) resetObstaclesPosition() {
+	g.Obstacles = []*GameObject{}
+	for i := 0; i < len(defaultXY); i++ {
+		if val, ok := defaultXY[i]; !ok {
+			log.Printf("some shit with obstacles generating", ok)
+		} else {
+			obstacle := &GameObject{
+				Position: Position{
+					yDelta: float64(val["y"]),
+					xDelta: float64(val["x"]),
+				},
+				notImage: true,
+				layers:   obsLayearsFromsky,
+				Mover: &JustHorizontalMover{
+					Speed: 2,
+				},
+			}
+			g.Obstacles = append(g.Obstacles, obstacle)
+		}
+	}
 }
 
 func main() {
 	MyFloppy := GameObject{
 		Position: Position{
-			yDelta: 0,
-			xDelta: 0,
+			yDelta: 100,
+			xDelta: 100,
 		},
 		Mover: &KyeBoardMover{
-			Speed: 9.0,
+			Speed: 5.0,
 		},
-		Img: gopher,
+		Img: dogImage,
 	}
-
-	Obstacles := []*GameObject{
-		{
-			Position: Position{
-				yDelta: -100,
-				xDelta: 1300,
-			},
-			notImage: true,
-			layers:   obsLayearsFromsky,
-			Mover: &JustHorizontalMover{
-				Speed: 2,
-			},
-		},
-		{
-			Position: Position{
-				yDelta: 500,
-				xDelta: 1300,
-			},
-			notImage: true,
-			layers:   obsLayears,
-			Mover: &JustHorizontalMover{
-				Speed: 2,
-			},
-		},
-		{
-			Position: Position{
-				yDelta: 500,
-				xDelta: 1500,
-			},
-			notImage: true,
-			layers:   obsLayears,
-			Mover: &JustHorizontalMover{
-				Speed: 2,
-			},
-		},
-	}
-
+	// Obstacles := []*GameObject{
+	// 	{
+	// 		Position: Position{
+	// 			yDelta: -100,
+	// 			xDelta: 1300,
+	// 		},
+	// 		notImage: true,
+	// 		layers:   obsLayearsFromsky,
+	// 		Mover: &JustHorizontalMover{
+	// 			Speed: 2,
+	// 		},
+	// 	},
+	// 	{
+	// 		Position: Position{
+	// 			yDelta: 500,
+	// 			xDelta: 1300,
+	// 		},
+	// 		notImage: true,
+	// 		layers:   obsLayears,
+	// 		Mover: &JustHorizontalMover{
+	// 			Speed: 2,
+	// 		},
+	// 	},
+	// 	{
+	// 		Position: Position{
+	// 			yDelta: 900,
+	// 			xDelta: 1500,
+	// 		},
+	// 		notImage: true,
+	// 		layers:   obsLayears,
+	// 		Mover: &JustHorizontalMover{
+	// 			Speed: 2,
+	// 		},
+	// 	},
+	// 	{
+	// 		Position: Position{
+	// 			yDelta: 830,
+	// 			xDelta: 1800,
+	// 		},
+	// 		notImage: true,
+	// 		layers:   obsLayears,
+	// 		Mover: &JustHorizontalMover{
+	// 			Speed: 2,
+	// 		},
+	// 	},
+	// 	{
+	// 		Position: Position{
+	// 			yDelta: 240,
+	// 			xDelta: 2000,
+	// 		},
+	// 		notImage: true,
+	// 		layers:   obsLayears,
+	// 		Mover: &JustHorizontalMover{
+	// 			Speed: 2,
+	// 		},
+	// 	},
+	//
+	// 	{
+	// 		Position: Position{
+	// 			yDelta: 900,
+	// 			xDelta: 2000,
+	// 		},
+	// 		notImage: true,
+	// 		layers:   obsLayears,
+	// 		Mover: &JustHorizontalMover{
+	// 			Speed: 2,
+	// 		},
+	// 	},
+	// }
+	//
 	MyGame := &Game{
 		Objects: []*GameObject{
 			&MyFloppy,
 		},
-		Obstacles: Obstacles,
-		debug:     true,
-		layers:    gameLayer,
-		started:   false,
-		ended:     false,
+		debug:   false,
+		layers:  gameLayer,
+		started: false,
+		ended:   false,
 	}
 
+	MyGame.resetObstaclesPosition()
 	ebiten.SetWindowSize(ScreenWidth, ScreenHeight)
 	ebiten.SetWindowTitle("Not Floppy :)")
 	if err := ebiten.RunGame(MyGame); err != nil {

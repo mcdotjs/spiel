@@ -1,6 +1,9 @@
 package main
 
 import (
+	"math"
+	"time"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -21,7 +24,8 @@ type Position struct {
 	yDelta float64
 	xDelta float64
 }
-//NOTE: there will be more movin types
+
+// NOTE: there will be more movin types
 type HasPosition interface {
 	GetPosition() *Position
 }
@@ -33,7 +37,11 @@ func (g *GameObject) GetPosition() *Position {
 func (a *JustHorizontalMover) Move(obj HasPosition) error {
 	pos := obj.GetPosition()
 	pos.xDelta -= a.Speed
+	timeFactor := float64(time.Now().UnixNano()) / 1e9
+	offset := 2 * math.Cos(timeFactor*2)
 
+	// You can wiggle in x or y — here's an X offset example
+	pos.yDelta += offset
 	if pos.xDelta < float64(-ObstacleWidth) {
 		pos.xDelta = float64(ObstacleWidth) + float64(ScreenWidth)
 	}
@@ -44,8 +52,8 @@ func (a *KyeBoardMover) Move(ob HasPosition) error {
 	pos := ob.GetPosition()
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
 		pos.xDelta += a.Speed
-		if pos.xDelta > 699 {
-			pos.xDelta = 699
+		if pos.xDelta > float64(ScreenWidth-33) {
+			pos.xDelta = float64(ScreenWidth - 33)
 		}
 	}
 
@@ -62,7 +70,6 @@ func (a *KyeBoardMover) Move(ob HasPosition) error {
 	}
 	return nil
 }
-
 
 func (g *Game) UpdateObjectMovement() {
 	for _, o := range g.Objects {

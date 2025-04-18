@@ -74,8 +74,9 @@ func (g *Game) gameEnded(screen *ebiten.Image) {
 		Text  string
 		Color color.Color
 	}{
-		{"Foff Failure!!", color.RGBA{255, 255, 255, 255}},
+		{"SO SORRY!!", color.RGBA{255, 222, 33, 255}},
+		{"Press ENTER", color.RGBA{255, 255, 255, 255}},
+		{"to restart game", color.RGBA{255, 255, 255, 255}},
 	}
-
-	DrawMultiLineText(screen, textLines, 100, 60, 20.0, 30.0)
+	DrawMultiLineText(screen, textLines, 100, 60, 28.0, 44.0)
 }

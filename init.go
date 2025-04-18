@@ -12,6 +12,7 @@ var (
 	gopher           *ebiten.Image
 	pikachu          *ebiten.Image
 	ObstacleImage    *ebiten.Image
+	dogImage         *ebiten.Image
 	ObstacleWidth    int
 	TilesImage       *ebiten.Image
 	tilesSourceImage *ebiten.Image
@@ -48,7 +49,12 @@ func init() {
 		log.Fatal(err)
 	}
 
-	tilesSourceImage, _, err = ebitenutil.NewImageFromFile("dungeon.png")
+	tilesSourceImage, _, err = ebitenutil.NewImageFromFile("dungeon2.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dogImage, _, err = ebitenutil.NewImageFromFile("wolf.png")
 	if err != nil {
 		log.Fatal(err)
 	}
