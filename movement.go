@@ -6,18 +6,24 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
+//NOTE:  you are welcome to tell me how to implement logic here 
 
 type KyeBoardMover struct {
-	Speed float64
+	Speed          float64
+	movingRightNow *bool
+	goingForward   *bool
 }
 
 type JustHorizontalMover struct {
-	Speed float64
-	Index float64
+	Speed          float64
+	movingRightNow *bool
+	goingForward   *bool
 }
 
 type Mover interface {
 	Move(obj HasPosition) error
+	isMoving() bool
+	xIsGrowing() bool
 }
 
 type Position struct {
@@ -29,6 +35,22 @@ type Position struct {
 type HasPosition interface {
 	GetPosition() *Position
 	GetAmplitude() *float64
+}
+
+func (o *KyeBoardMover) xIsGrowing() bool {
+	return *o.goingForward
+}
+
+func (o *JustHorizontalMover) xIsGrowing() bool {
+	return false
+}
+
+func (g *KyeBoardMover) isMoving() bool {
+	return *g.movingRightNow
+}
+
+func (g *JustHorizontalMover) isMoving() bool {
+	return *g.movingRightNow
 }
 
 func (g *GameObject) GetPosition() *Position {
@@ -55,17 +77,20 @@ func (a *JustHorizontalMover) Move(obj HasPosition) error {
 
 func (a *KyeBoardMover) Move(ob HasPosition) error {
 	pos := ob.GetPosition()
+	*a.movingRightNow = false
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
+		*a.movingRightNow = true
+		*a.goingForward = true
 		pos.xDelta += a.Speed
 		if pos.xDelta > float64(ScreenWidth-33) {
 			pos.xDelta = float64(ScreenWidth - 33)
 		}
 	}
-
 	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+		*a.goingForward = false
+		*a.movingRightNow = true
 		pos.xDelta -= a.Speed
 	}
-
 	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
 		pos.yDelta += a.Speed
 	}
@@ -83,7 +108,6 @@ func (g *Game) UpdateObjectMovement() {
 
 	for _, o := range g.Obstacles {
 		o.Mover.Move(o)
-		//g.Objects[0].Colliding(o)
 	}
 
 }

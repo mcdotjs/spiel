@@ -13,6 +13,7 @@ var (
 	pikachu          *ebiten.Image
 	ObstacleImage    *ebiten.Image
 	dogImage         *ebiten.Image
+	dogImageBack     *ebiten.Image
 	ObstacleWidth    int
 	TilesImage       *ebiten.Image
 	tilesSourceImage *ebiten.Image
@@ -51,6 +52,11 @@ func init() {
 	}
 
 	tilesSourceImage, _, err = ebitenutil.NewImageFromFile("dungeon2.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dogImageBack, _, err = ebitenutil.NewImageFromFile("wolfback.png")
 	if err != nil {
 		log.Fatal(err)
 	}
