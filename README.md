@@ -2,7 +2,7 @@
 
 > This is how I am learning Go. Thanks for checking it out!
 
-##### How to Run
+#### How to Run
 
 If you have Go installed, you can run the game with:
 
@@ -11,7 +11,7 @@ go run github.com/mcdotjs/spiel
 
 ```
 
-##### Work in Progress
+#### Work in Progress
 
 Upcoming features (maybe)
 - Levels

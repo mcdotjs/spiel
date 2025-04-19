@@ -64,7 +64,7 @@ func (g *Game) DrawDog(screen *ebiten.Image, playerObject *GameObject) {
 		i = (g.count / animationSpeed) % frames
 	}
 	sx, sy := i*int(tileSize), 0
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("Is moving right now?: ", eee, back))
+	//ebitenutil.DebugPrint(screen, fmt.Sprintf("Is moving right now?: ", eee, back))
 	if back == false {
 		screen.DrawImage(dogImageBack.SubImage(image.Rect(sx, sy, sx+int(tileSize), sy+int(tileSize))).(*ebiten.Image), op)
 	} else {
@@ -125,6 +125,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 }
 
+//TODO: this is not good
 func (g *Game) resetObstaclesPosition() {
 	g.Obstacles = []*GameObject{}
 	for i := 0; i < len(defaultXY); i++ {
