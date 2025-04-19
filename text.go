@@ -64,7 +64,7 @@ func (g *Game) notStarted(screen *ebiten.Image) {
 		Color color.Color
 	}{
 		{"no mouse needed...", color.RGBA{255, 255, 255, 255}},
-		{"floppy is nvim user btw", color.RGBA{255, 100, 180, 255}},
+		{"dago is nvim user btw", color.RGBA{255, 100, 180, 255}},
 	}
 	DrawMultiLineText(screen, nvimLines, 900, 700, 12.0, 18.0)
 }
