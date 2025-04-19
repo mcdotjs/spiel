@@ -32,11 +32,12 @@ type Game struct {
 }
 
 type GameObject struct {
-	Position Position
-	Mover    Mover
-	Img      *ebiten.Image
-	layers   [][]int
-	notImage bool
+	Position  Position
+	Mover     Mover
+	Img       *ebiten.Image
+	layers    [][]int
+	notImage  bool
+	Amplitude float64
 }
 
 func init() {

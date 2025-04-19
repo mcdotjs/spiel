@@ -138,6 +138,7 @@ func (g *Game) resetObstaclesPosition() {
 					yDelta: float64(val["y"]),
 					xDelta: float64(val["x"]),
 				},
+				Amplitude: 0,
 				notImage: true,
 				layers:   obsLayearsFromsky,
 				Mover: &JustHorizontalMover{
@@ -159,6 +160,7 @@ func main() {
 			Speed: 5.0,
 		},
 		Img: dogImage,
+		
 	}
 	// Obstacles := []*GameObject{
 	// 	{

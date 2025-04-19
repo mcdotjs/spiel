@@ -28,19 +28,24 @@ type Position struct {
 // NOTE: there will be more movin types
 type HasPosition interface {
 	GetPosition() *Position
+	GetAmplitude() *float64
 }
 
 func (g *GameObject) GetPosition() *Position {
 	return &g.Position
 }
 
+func (g *GameObject) GetAmplitude() *float64 {
+	return &g.Amplitude
+}
+
 func (a *JustHorizontalMover) Move(obj HasPosition) error {
 	pos := obj.GetPosition()
+	ampl := obj.GetAmplitude()
 	pos.xDelta -= a.Speed
 	timeFactor := float64(time.Now().UnixNano()) / 1e9
-	offset := 2 * math.Cos(timeFactor*2)
+	offset := *ampl * math.Cos(timeFactor*2)
 
-	// You can wiggle in x or y — here's an X offset example
 	pos.yDelta += offset
 	if pos.xDelta < float64(-ObstacleWidth) {
 		pos.xDelta = float64(ObstacleWidth) + float64(ScreenWidth)
