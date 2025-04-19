@@ -17,3 +17,12 @@ Upcoming features (maybe)
 - Levels
 - Lives system
 - Choose your dog 🐕
+
+#### Credit for graphics
+- wolf
+Graphic artist: Stephen "Redshrike" Challener,  William.Thompsonj (contributor) [more here](https://opengameart.org/content/lpc-wolf-animation)
+- other stuff
+[dungeon graphics](https://opengameart.org/content/dungeon-crawl-32x32-tiles-supplemental)
+- owl
+Thank you [Owl Person Vander](https://opengameart.org/content/owl-animated-person)
+
