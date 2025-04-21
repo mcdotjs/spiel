@@ -54,7 +54,7 @@ func (g *Game) notStarted(screen *ebiten.Image) {
 		Color color.Color
 	}{
 		{"WELCOME!!!", color.RGBA{255, 222, 33, 255}},
-		{"Press ENTER to start game", color.RGBA{255, 255, 255, 255}},
+		{"Click Me to start game", color.RGBA{255, 255, 255, 255}},
 		{"Use ARROW KEYS to move", color.RGBA{200, 200, 100, 255}},
 		{"Avoid obstacles!", color.RGBA{255, 100, 100, 255}},
 	}

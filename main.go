@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 func (g *Game) Update() error {
@@ -15,7 +16,11 @@ func (g *Game) Update() error {
 		g.UpdateObjectMovement()
 		g.UpdateCollisions()
 	}
-
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton(MouseButtonLeft)) {
+		g.ended = false
+		g.hideGame = false
+		g.started = true
+	}
 	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
 		g.ended = false
 		g.hideGame = false

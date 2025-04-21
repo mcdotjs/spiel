@@ -9,21 +9,26 @@ import (
 )
 
 var (
-	ScreenWidth      int
-	ScreenHeight     int
-	gopher           *ebiten.Image
-	pikachu          *ebiten.Image
-	ObstacleImage    *ebiten.Image
-	dogImage         *ebiten.Image
-	dogImageBack     *ebiten.Image
-	ObstacleWidth    int
-	TilesImage       *ebiten.Image
-	tilesSourceImage *ebiten.Image
-	tileSize         int = 32
-	tilesVieport     int = 1400
-	padding          int = -100
-	bg               image.Rectangle
+	ScreenWidth       int
+	ScreenHeight      int
+	gopher            *ebiten.Image
+	pikachu           *ebiten.Image
+	ObstacleImage     *ebiten.Image
+	dogImage          *ebiten.Image
+	dogImageBack      *ebiten.Image
+	ObstacleWidth     int
+	TilesImage        *ebiten.Image
+	tilesSourceImage  *ebiten.Image
+	tileSize          int = 32
+	tilesVieport      int = 1400
+	padding           int = -100
+	bg                image.Rectangle
+	MouseButtonLeft   MouseButton
+	MouseButtonRight  MouseButton
+	MouseButtonMiddle MouseButton
 )
+
+type MouseButton int
 
 type Game struct {
 	Objects    []*GameObject
