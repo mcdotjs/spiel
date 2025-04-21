@@ -22,7 +22,38 @@ func (g *Game) Update() error {
 		g.started = true
 	}
 
+	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
+		s := 30
+		if g.Objects[0].Position.xDelta > float64(300) {
+			s = 50
+		}
+		g.viewport.MoveX(s, 1)
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+		g.viewport.MoveX(30, -1)
+	}
 	return nil
+}
+
+func (g *Game) drawMovingBackground(screen *ebiten.Image) {
+	x16, y16 := g.viewport.Position()
+	offsetX, offsetY := float64(-x16)/16, float64(-y16)/16
+	w := tilesSourceImage.Bounds().Dx()
+	tileXCount := w / tileSize
+
+	var xCount = tilesVieport / tileSize
+	for _, l := range g.layers {
+		for i, t := range l {
+			op := &ebiten.DrawImageOptions{}
+			op.GeoM.Translate(float64(int(offsetX)+padding+(i%xCount)*tileSize), float64(int(offsetY)+padding+(i/xCount)*tileSize))
+
+			sx := (t % tileXCount) * tileSize
+			sy := (t / tileXCount) * tileSize
+			bg = image.Rect(sx, sy, sx+tileSize, sy+tileSize)
+			screen.DrawImage(tilesSourceImage.SubImage(bg).(*ebiten.Image), op)
+		}
+	}
 }
 
 func (g *Game) drawBackground(screen *ebiten.Image, background *ebiten.Image) {
@@ -94,7 +125,7 @@ func (ob *GameObject) drawObstacle(screen *ebiten.Image) {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	if g.started {
-		g.drawBackground(screen, tilesSourceImage)
+		g.drawMovingBackground(screen)
 		for _, o := range g.Objects {
 			g.DrawDog(screen, o)
 			if g.debug {
@@ -135,11 +166,11 @@ func (g *Game) resetObstaclesPosition() {
 					yDelta: float64(val["y"]),
 					xDelta: float64(val["x"]),
 				},
-				Amplitude: 3,
+				Amplitude: 1,
 				notImage:  true,
 				layers:    obsLayearsFromsky,
 				Mover: &JustHorizontalMover{
-					Speed: 2,
+					Speed: 0,
 				},
 			}
 			g.Obstacles = append(g.Obstacles, obstacle)
@@ -157,7 +188,7 @@ func main() {
 			xDelta: 100,
 		},
 		Mover: &KyeBoardMover{
-			Speed:          5.0,
+			Speed:          2.0,
 			movingRightNow: &j,
 			goingForward:   &f,
 		},

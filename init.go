@@ -1,9 +1,11 @@
 package main
 
 import (
+	"image"
+	"log"
+
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"log"
 )
 
 var (
@@ -18,6 +20,9 @@ var (
 	TilesImage       *ebiten.Image
 	tilesSourceImage *ebiten.Image
 	tileSize         int = 32
+	tilesVieport     int = 1400
+	padding          int = -100
+	bg               image.Rectangle
 )
 
 type Game struct {
@@ -30,6 +35,7 @@ type Game struct {
 	debug      bool
 	layers     [][]int
 	count      int
+	viewport   viewport
 }
 
 type GameObject struct {
@@ -39,6 +45,11 @@ type GameObject struct {
 	layers    [][]int
 	notImage  bool
 	Amplitude float64
+}
+
+type viewport struct {
+	x16 int
+	y16 int
 }
 
 func init() {

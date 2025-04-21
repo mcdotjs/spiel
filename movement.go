@@ -1,12 +1,14 @@
 package main
 
 import (
+	"image"
 	"math"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
-//NOTE:  you are welcome to tell me how to implement logic here 
+
+//NOTE:  you are welcome to tell me how to implement logic here
 
 type KyeBoardMover struct {
 	Speed          float64
@@ -64,7 +66,12 @@ func (g *GameObject) GetAmplitude() *float64 {
 func (a *JustHorizontalMover) Move(obj HasPosition) error {
 	pos := obj.GetPosition()
 	ampl := obj.GetAmplitude()
-	pos.xDelta -= a.Speed
+
+	pos.xDelta -= 1
+	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
+		pos.xDelta -= 3
+	}
+
 	timeFactor := float64(time.Now().UnixNano()) / 1e9
 	offset := *ampl * math.Cos(timeFactor*2)
 
@@ -82,9 +89,14 @@ func (a *KyeBoardMover) Move(ob HasPosition) error {
 		*a.movingRightNow = true
 		*a.goingForward = true
 		pos.xDelta += a.Speed
-		if pos.xDelta > float64(ScreenWidth-33) {
-			pos.xDelta = float64(ScreenWidth - 33)
+		if pos.xDelta > float64(ScreenWidth/2) {
+			pos.xDelta = float64(ScreenWidth / 2)
 		}
+
+	}
+
+	if pos.yDelta > float64(ScreenHeight) {
+		pos.yDelta = float64(screenHeight)
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		*a.goingForward = false
@@ -101,11 +113,20 @@ func (a *KyeBoardMover) Move(ob HasPosition) error {
 	return nil
 }
 
-func (g *Game) UpdateObjectMovement() {
-	for _, o := range g.Objects {
-		o.Mover.Move(o)
-	}
+func (p *viewport) MoveX(fastness int, direction int) {
+	s := image.Point{X: tileSize, Y: tileSize}
+	maxX16 := s.X * 16
 
+	p.x16 += (s.X/16 + fastness) * direction
+	p.x16 %= maxX16
+}
+
+func (p *viewport) Position() (int, int) {
+	return p.x16, p.y16
+}
+
+func (g *Game) UpdateObjectMovement() {
+	g.Objects[0].Mover.Move(g.Objects[0])
 	for _, o := range g.Obstacles {
 		o.Mover.Move(o)
 	}
