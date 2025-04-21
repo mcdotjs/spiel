@@ -1,8 +1,13 @@
-<!DOCTYPE html>
-<script src="wasm_exec.js"></script>
-<script>
-const go = new Go();
-WebAssembly.instantiateStreaming(fetch("dago.wasm"), go.importObject).then(result => {
-    go.run(result.instance);
-});
-</script>
+<!doctype html>
+<div id="game">
+  <iframe src="main.html" width="1200" height="800"></iframe>
+</div>
+<style>
+  html {
+    padding-top:3rem;
+    background: black;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+</style>
