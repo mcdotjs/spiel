@@ -8,24 +8,21 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-//NOTE:  you are welcome to tell me how to implement logic here
+type Mover interface {
+	Move(*GameObject) error
+}
+
+type HasPosition interface {
+	GetPosition() *Position
+}
 
 type KyeBoardMover struct {
 	Speed          float64
-	movingRightNow *bool
-	goingForward   *bool
 }
 
-type JustHorizontalMover struct {
-	Speed          float64
-	movingRightNow *bool
-	goingForward   *bool
-}
-
-type Mover interface {
-	Move(obj HasPosition) error
-	isMoving() bool
-	xIsGrowing() bool
+type HorizontalMover struct {
+	Speed     float64
+	Amplitude float64
 }
 
 type Position struct {
@@ -33,39 +30,9 @@ type Position struct {
 	xDelta float64
 }
 
-// NOTE: there will be more movin types
-type HasPosition interface {
-	GetPosition() *Position
-	GetAmplitude() *float64
-}
-
-func (o *KyeBoardMover) xIsGrowing() bool {
-	return *o.goingForward
-}
-
-func (o *JustHorizontalMover) xIsGrowing() bool {
-	return false
-}
-
-func (g *KyeBoardMover) isMoving() bool {
-	return *g.movingRightNow
-}
-
-func (g *JustHorizontalMover) isMoving() bool {
-	return *g.movingRightNow
-}
-
-func (g *GameObject) GetPosition() *Position {
-	return &g.Position
-}
-
-func (g *GameObject) GetAmplitude() *float64 {
-	return &g.Amplitude
-}
-
-func (a *JustHorizontalMover) Move(obj HasPosition) error {
-	pos := obj.GetPosition()
-	ampl := obj.GetAmplitude()
+func (a *HorizontalMover) Move(obj *GameObject) error {
+	pos := &obj.Position
+	ampl := a.Amplitude
 
 	pos.xDelta -= 1
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
@@ -73,7 +40,7 @@ func (a *JustHorizontalMover) Move(obj HasPosition) error {
 	}
 
 	timeFactor := float64(time.Now().UnixNano()) / 1e9
-	offset := *ampl * math.Cos(timeFactor*2)
+	offset := ampl * math.Cos(timeFactor*2)
 
 	pos.yDelta += offset
 	if pos.xDelta < float64(-ObstacleWidth) {
@@ -82,12 +49,13 @@ func (a *JustHorizontalMover) Move(obj HasPosition) error {
 	return nil
 }
 
-func (a *KyeBoardMover) Move(ob HasPosition) error {
-	pos := ob.GetPosition()
-	*a.movingRightNow = false
+func (a *KyeBoardMover) Move(ob *GameObject) error {
+	pos := &ob.Position
+	*ob.movingRightNow = false
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		*a.movingRightNow = true
-		*a.goingForward = true
+		ob.metres += 0.3
+		*ob.movingRightNow = true
+		*ob.goingForward = true
 		pos.xDelta += a.Speed
 		if pos.xDelta > float64(ScreenWidth/2) {
 			pos.xDelta = float64(ScreenWidth / 2)
@@ -98,17 +66,27 @@ func (a *KyeBoardMover) Move(ob HasPosition) error {
 	if pos.yDelta > float64(ScreenHeight) {
 		pos.yDelta = float64(screenHeight)
 	}
+
+	if pos.yDelta < 80 {
+		pos.yDelta = 80
+	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-		*a.goingForward = false
-		*a.movingRightNow = true
+
+		ob.metres -= 0.3
+		*ob.goingForward = false
+		*ob.movingRightNow = true
 		pos.xDelta -= a.Speed
 	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-		pos.yDelta += a.Speed
+		ob.metres -= 0.08
+		pos.yDelta += a.Speed * 2
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-		pos.yDelta -= a.Speed
+		ob.metres -= 0.08
+		pos.yDelta -= a.Speed * 2
 	}
 	return nil
 }
@@ -130,5 +108,4 @@ func (g *Game) UpdateObjectMovement() {
 	for _, o := range g.Obstacles {
 		o.Mover.Move(o)
 	}
-
 }

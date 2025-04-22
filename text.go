@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"image/color"
 	"log"
 
@@ -54,7 +55,7 @@ func (g *Game) notStarted(screen *ebiten.Image) {
 		Color color.Color
 	}{
 		{"WELCOME!!!", color.RGBA{255, 222, 33, 255}},
-		{"Click Me to start game", color.RGBA{255, 255, 255, 255}},
+		{"Click to start game", color.RGBA{255, 255, 255, 255}},
 		{"Use ARROW KEYS to move", color.RGBA{200, 200, 100, 255}},
 		{"Avoid obstacles!", color.RGBA{255, 100, 100, 255}},
 	}
@@ -63,20 +64,23 @@ func (g *Game) notStarted(screen *ebiten.Image) {
 		Text  string
 		Color color.Color
 	}{
-		{"no mouse needed...", color.RGBA{255, 255, 255, 255}},
-		{"dago is nvim user btw", color.RGBA{255, 100, 180, 255}},
+		{"Dago is nvim user btw", color.RGBA{255, 100, 180, 255}},
 	}
 	DrawMultiLineText(screen, nvimLines, 900, 700, 12.0, 18.0)
 }
 
 func (g *Game) gameEnded(screen *ebiten.Image) {
+	m := int(g.Objects[0].metres)
+	s := fmt.Sprintf("You ran %d metres :)", m)
+
 	textLines := []struct {
 		Text  string
 		Color color.Color
 	}{
-		{"SO SORRY!!", color.RGBA{255, 222, 33, 255}},
-		{"Press ENTER", color.RGBA{255, 255, 255, 255}},
-		{"to restart game", color.RGBA{255, 255, 255, 255}},
+		{"Well done!!", color.RGBA{255, 222, 33, 255}},
+		{s, color.RGBA{55, 233, 255, 255}},
+		{"Press ENTER", color.RGBA{255, 25, 255, 255}},
+		{"to restart game", color.RGBA{255, 25, 255, 255}},
 	}
 	DrawMultiLineText(screen, textLines, 100, 60, 28.0, 44.0)
 }

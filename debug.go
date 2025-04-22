@@ -14,7 +14,7 @@ var (
 )
 
 func (o *GameObject) GetBoundsOfPlayer() image.Rectangle {
-	pos := o.GetPosition()
+	pos := o.Position
 	if o.notImage == false {
 		//width, height := o.Img.Bounds().Dx(), o.Img.Bounds().Dy()
 		img := image.Rect(

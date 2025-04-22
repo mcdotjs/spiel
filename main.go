@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 	_ "image/png"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
@@ -16,15 +18,18 @@ func (g *Game) Update() error {
 		g.UpdateObjectMovement()
 		g.UpdateCollisions()
 	}
+
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton(MouseButtonLeft)) {
 		g.ended = false
 		g.hideGame = false
 		g.started = true
 	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyEnter) {
 		g.ended = false
 		g.hideGame = false
 		g.started = true
+		g.Objects[0].metres = 0
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
@@ -84,22 +89,22 @@ func (g *Game) DrawDog(screen *ebiten.Image, playerObject *GameObject) {
 	tileSize := 64
 	frames := 5
 	animationSpeed := 5
-	back := playerObject.Mover.xIsGrowing()
+	back := playerObject.goingForward
 	sf := float64(2)
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate((-float64(tileSize) / 2), -float64(tileSize)/2)
 	op.GeoM.Translate(playerObject.Position.xDelta/sf, playerObject.Position.yDelta/sf)
 	op.GeoM.Scale(sf, sf)
 	i := 0
-	eee := playerObject.Mover.isMoving()
-	if eee == false {
+	eee := playerObject.movingRightNow
+	if *eee == false {
 		i = 0
 	} else {
 		i = (g.count / animationSpeed) % frames
 	}
 	sx, sy := i*int(tileSize), 0
-	//ebitenutil.DebugPrint(screen, fmt.Sprintf("Is moving right now?: ", eee, back))
-	if back == false {
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("xdelte", playerObject.metres))
+	if *back == false {
 		screen.DrawImage(dogImageBack.SubImage(image.Rect(sx, sy, sx+int(tileSize), sy+int(tileSize))).(*ebiten.Image), op)
 	} else {
 		screen.DrawImage(dogImage.SubImage(image.Rect(sx, sy, sx+int(tileSize), sy+int(tileSize))).(*ebiten.Image), op)
@@ -159,7 +164,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 }
 
-// TODO: this is not good
 func (g *Game) resetObstaclesPosition() {
 	g.Obstacles = []*GameObject{}
 	for i := 0; i < len(defaultXY); i++ {
@@ -171,11 +175,11 @@ func (g *Game) resetObstaclesPosition() {
 					yDelta: float64(val["y"]),
 					xDelta: float64(val["x"]),
 				},
-				Amplitude: 1,
-				notImage:  true,
-				layers:    obsLayearsFromsky,
-				Mover: &JustHorizontalMover{
-					Speed: 0,
+				notImage: true,
+				layers:   obsLayearsFromsky,
+				Mover: &HorizontalMover{
+					Speed:     0,
+					Amplitude: float64(i),
 				},
 			}
 			g.Obstacles = append(g.Obstacles, obstacle)
@@ -184,25 +188,23 @@ func (g *Game) resetObstaclesPosition() {
 }
 
 func main() {
-	//NOTE: learn Mirko
-	j := true
-	f := false
-	MyFloppy := GameObject{
+	DOG := GameObject{
 		Position: Position{
 			yDelta: 100,
 			xDelta: 100,
 		},
 		Mover: &KyeBoardMover{
-			Speed:          2.0,
-			movingRightNow: &j,
-			goingForward:   &f,
+			Speed: 2.0,
 		},
-		Img: dogImage,
+		Img:            dogImage,
+		metres:         0,
+		movingRightNow: &movingRightNow,
+		goingForward:   &goingForward,
 	}
 
 	MyGame := &Game{
 		Objects: []*GameObject{
-			&MyFloppy,
+			&DOG,
 		},
 		debug:   false,
 		layers:  gameLayer,

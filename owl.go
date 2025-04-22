@@ -34,7 +34,7 @@ func init() {
 func (g *Game) DrawOwl(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)
-	op.GeoM.Translate(120, 18)
+	op.GeoM.Translate(120, 13)
 	op.GeoM.Scale(4, 4)
 	i := (g.count / 5) % frameCount
 	sx, sy := frameOX+i*frameWidth, frameOY
